@@ -571,8 +571,8 @@ const fabBtn = document.getElementById('fabBtn');
 const modalClose = document.getElementById('modalClose');
 const btnCancel = document.getElementById('btnCancel');
 
-function openModal(){ modalOverlay.classList.add('open'); document.body.style.overflow = 'hidden'; }
-function closeModal(){ modalOverlay.classList.remove('open'); document.body.style.overflow = ''; }
+function openModal(){ modalOverlay.classList.add('open'); document.body.style.overflow = 'hidden'; document.body.style.position = 'fixed'; document.body.style.width = '100%'; }
+function closeModal(){ modalOverlay.classList.remove('open'); document.body.style.overflow = ''; document.body.style.position = ''; document.body.style.width = ''; }
 
 fabBtn.addEventListener('click', openModal);
 modalClose.addEventListener('click', closeModal);
