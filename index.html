@@ -175,7 +175,7 @@
 
   .modal-header{
     display:flex; justify-content:space-between; align-items:center; padding:18px 20px;
-    border-bottom:1px solid var(--line); padding-top:calc(18px + env(safe-area-inset-top));
+    border-bottom:1px solid var(--line);
   }
   .modal-title{font-weight:600; font-size:16px;}
   .modal-close{
@@ -572,8 +572,23 @@ const fabBtn = document.getElementById('fabBtn');
 const modalClose = document.getElementById('modalClose');
 const btnCancel = document.getElementById('btnCancel');
 
-function openModal(){ modalOverlay.classList.add('open'); document.documentElement.style.overflow = 'hidden'; }
-function closeModal(){ modalOverlay.classList.remove('open'); document.documentElement.style.overflow = ''; }
+let scrollPosition = 0;
+
+function openModal(){ 
+  scrollPosition = window.scrollY;
+  document.body.style.position = 'fixed';
+  document.body.style.top = `-${scrollPosition}px`;
+  document.body.style.width = '100%';
+  modalOverlay.classList.add('open');
+}
+
+function closeModal(){ 
+  document.body.style.position = '';
+  document.body.style.top = '';
+  document.body.style.width = '';
+  window.scrollTo(0, scrollPosition);
+  modalOverlay.classList.remove('open');
+}
 
 fabBtn.addEventListener('click', openModal);
 modalClose.addEventListener('click', closeModal);
