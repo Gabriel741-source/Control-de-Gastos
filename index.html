@@ -161,7 +161,8 @@
 
   /* Modal */
   .modal-overlay{
-    display:none; position:fixed; inset:0; background:rgba(0,0,0,0); z-index:200;
+    display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0); z-index:200;
+    align-items:flex-end; justify-content:center;
   }
   .modal-overlay.open{ display:flex; background:rgba(0,0,0,0.25); }
 
@@ -174,7 +175,7 @@
 
   .modal-header{
     display:flex; justify-content:space-between; align-items:center; padding:18px 20px;
-    border-bottom:1px solid var(--line);
+    border-bottom:1px solid var(--line); padding-top:calc(18px + env(safe-area-inset-top));
   }
   .modal-title{font-weight:600; font-size:16px;}
   .modal-close{
@@ -571,8 +572,8 @@ const fabBtn = document.getElementById('fabBtn');
 const modalClose = document.getElementById('modalClose');
 const btnCancel = document.getElementById('btnCancel');
 
-function openModal(){ modalOverlay.classList.add('open'); document.body.style.overflow = 'hidden'; document.body.style.position = 'fixed'; document.body.style.width = '100%'; }
-function closeModal(){ modalOverlay.classList.remove('open'); document.body.style.overflow = ''; document.body.style.position = ''; document.body.style.width = ''; }
+function openModal(){ modalOverlay.classList.add('open'); document.documentElement.style.overflow = 'hidden'; }
+function closeModal(){ modalOverlay.classList.remove('open'); document.documentElement.style.overflow = ''; }
 
 fabBtn.addEventListener('click', openModal);
 modalClose.addEventListener('click', closeModal);
