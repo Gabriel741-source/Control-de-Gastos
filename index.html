@@ -10,15 +10,17 @@
 <title>Finanzas</title>
 <style>
   :root{
-    --bg:#FAFBF8;
-    --card:#FFFFFF;
-    --ink:#000000;
-    --ink-soft:#666666;
-    --ink-faint:#CCCCCC;
-    --line:#E5E5E5;
-    --coral:#C1502B;
-    --teal:#1F7A5C;
-    --gold:#C9A227;
+    --bg:#000000;
+    --card:#1C1C1E;
+    --ink:#FFFFFF;
+    --ink-soft:#A1A1A6;
+    --ink-faint:#424245;
+    --line:#38383A;
+    --coral:#FF3B30;
+    --teal:#34C759;
+    --gold:#FF9500;
+    --blue:#007AFF;
+    --purple:#5856D6;
   }
   *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
   html,body{height:100%; margin:0;}
@@ -39,13 +41,20 @@
     display:flex;
     flex-direction:column;
     background:var(--bg);
+    position:relative;
   }
 
   .header{
     padding:16px 20px 0;
+    padding-top:calc(16px + env(safe-area-inset-top));
     display:flex;
     justify-content:space-between;
     align-items:baseline;
+    background:var(--bg);
+    position:sticky;
+    top:0;
+    z-index:10;
+    border-bottom:1px solid var(--line);
   }
   .brand{font-weight:600; font-size:20px;}
   .month{font-size:13px; color:var(--ink-soft);}
@@ -60,10 +69,10 @@
 
   .card{
     background:var(--card);
-    border-radius:16px;
+    border-radius:18px;
     padding:20px;
     margin:0 0 16px 0;
-    box-shadow:0 1px 3px rgba(0,0,0,0.04);
+    box-shadow:0 1px 2px rgba(0,0,0,0.02), 0 2px 6px rgba(0,0,0,0.06);
   }
 
   /* Resumen */
@@ -106,10 +115,27 @@
   .trend-bars{display:flex; align-items:flex-end; gap:8px; height:140px; justify-content:center;}
   .trend-bar{
     flex:1; max-width:40px; background:var(--teal); border-radius:6px 6px 0 0;
-    position:relative; min-height:4px; transition:background 0.3s ease;
+    position:relative; min-height:4px; transition:background 0.3s ease, height 0.35s cubic-bezier(0.34,1.56,0.64,1);
   }
   .trend-bar.negative{ background:var(--coral); }
+  .trend-bar.empty{ background:var(--line); }
   .trend-label{position:absolute; bottom:-20px; font-size:11px; color:var(--ink-soft); width:100%; text-align:center;}
+
+  /* Time selector */
+  .time-btn{
+    padding:10px 14px; font-size:12px; font-weight:600; border-radius:12px;
+    border:none; background:rgba(255,255,255,0.08); color:var(--ink-soft); 
+    cursor:pointer; transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    border:1px solid rgba(255,255,255,0.1);
+  }
+  .time-btn:hover{ background:rgba(255,255,255,0.12); }
+  .time-btn:active{ transform:scale(0.95); }
+  
+  .time-btn[data-scale="diario"].active{ background:linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%); color:#fff; border:none; box-shadow:0 8px 16px rgba(0,122,255,0.3); }
+  .time-btn[data-scale="mes"].active{ background:linear-gradient(135deg, #34C759 0%, #66D682 100%); color:#fff; border:none; box-shadow:0 8px 16px rgba(52,199,89,0.3); }
+  .time-btn[data-scale="3meses"].active{ background:linear-gradient(135deg, #FF9500 0%, #FFB84D 100%); color:#fff; border:none; box-shadow:0 8px 16px rgba(255,149,0,0.3); }
+  .time-btn[data-scale="6meses"].active{ background:linear-gradient(135deg, #FF3B30 0%, #FF6B6B 100%); color:#fff; border:none; box-shadow:0 8px 16px rgba(255,59,48,0.3); }
+  .time-btn[data-scale="anos"].active{ background:linear-gradient(135deg, #5856D6 0%, #9370DB 100%); color:#fff; border:none; box-shadow:0 8px 16px rgba(88,86,214,0.3); }
 
   /* Movimientos */
   .tx-item{
@@ -138,26 +164,40 @@
   /* Bottom nav */
   .bottom-nav{
     position:fixed; bottom:0; left:50%; transform:translateX(-50%); max-width:450px; width:100%;
-    display:flex; justify-content:space-around; padding:8px 0 max(8px, env(safe-area-inset-bottom));
-    background:var(--card); border-top:1px solid var(--line); z-index:100;
+    display:flex; justify-content:space-around; align-items:center; padding:12px 0 max(12px, env(safe-area-inset-bottom));
+    background:rgba(28,28,30,0.6); border-top:1px solid rgba(255,255,255,0.1); z-index:100;
+    backdrop-filter:blur(20px);
+    -webkit-backdrop-filter:blur(20px);
+    gap:8px;
+    padding-left:8px;
+    padding-right:8px;
   }
   .nav-btn{
     flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
-    gap:4px; padding:8px 0; background:none; border:none; cursor:pointer;
-    font-size:11px; color:var(--ink-soft); transition:color 0.2s ease;
+    gap:6px; padding:12px 8px; background:rgba(255,255,255,0.1); border:none; cursor:pointer;
+    font-size:11px; color:var(--ink); transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    border-radius:16px; font-weight:500; border:1px solid rgba(255,255,255,0.1);
   }
-  .nav-btn.active{ color:var(--ink); font-weight:600; }
+  .nav-btn:active{ transform:scale(0.9); }
+  
+  .nav-btn.active{
+    background:linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%);
+    color:#fff;
+    box-shadow:0 8px 20px rgba(0,122,255,0.3);
+    transform:scale(1.05);
+    border:none;
+  }
   .nav-icon{ width:24px; height:24px; }
 
   /* FAB */
   .fab{
     position:fixed; bottom:calc(70px + env(safe-area-inset-bottom)); right:18px;
-    width:56px; height:56px; background:var(--ink); color:#fff;
+    width:56px; height:56px; background:var(--blue); color:#fff;
     border:none; border-radius:28px; cursor:pointer; display:flex; align-items:center; justify-content:center;
-    font-size:28px; box-shadow:0 4px 12px rgba(0,0,0,0.15); z-index:50;
-    transition:transform 0.12s ease;
+    font-size:28px; box-shadow:0 4px 12px rgba(0,122,255,0.3); z-index:50;
+    transition:transform 0.12s ease, box-shadow 0.12s ease;
   }
-  .fab:active{ transform:scale(0.93); }
+  .fab:active{ transform:scale(0.93); box-shadow:0 2px 6px rgba(0,122,255,0.2); }
 
   /* Modal */
   .modal-overlay{
@@ -186,21 +226,26 @@
     flex:1; overflow-y:auto; padding:18px 20px;
   }
 
-  .segmented{display:flex; background:var(--bg); border-radius:10px; padding:3px; margin-bottom:14px;}
+  .segmented{display:flex; background:rgba(255,255,255,0.08); border-radius:10px; padding:3px; margin-bottom:14px; border:1px solid rgba(255,255,255,0.1);}
   .seg-btn{
     flex:1; padding:9px 0; font-size:13px; font-weight:500; border-radius:8px;
     border:none; background:transparent; color:var(--ink-soft); cursor:pointer;
     transition:all 0.2s ease;
   }
-  .seg-btn.active{ background:var(--card); color:var(--ink); box-shadow:0 1px 2px rgba(0,0,0,0.05); }
+  .seg-btn.active{ background:var(--blue); color:#fff; box-shadow:0 4px 12px rgba(0,122,255,0.3); }
 
   .form-row{display:flex; gap:10px; margin-bottom:12px;}
   input[type=text], input[type=number], input[type=date], select{
     padding:13px 14px; font-size:16px; border:1px solid var(--line); border-radius:10px;
-    background:var(--bg); color:var(--ink); outline:none; width:100%; font-family:inherit;
-    transition:border-color 0.15s ease;
+    background:var(--card); color:var(--ink); outline:none; width:100%; font-family:inherit;
+    transition:all 0.2s ease;
   }
-  input:focus, select:focus{ border-color:var(--ink); }
+  input[type=date]{
+    background:var(--card) url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4"/><path d="M3 10h18"/></svg>') no-repeat right 10px center;
+    padding-right:40px;
+    background-size:20px;
+  }
+  input:focus, select:focus{ border-color:var(--blue); background-color:var(--card); }
   input[type=number]{width:130px;}
   #noteInput, #dateInput{width:100%;}
   .err{color:var(--coral); font-size:12px; margin-bottom:12px; display:none;}
@@ -209,12 +254,12 @@
     display:flex; gap:10px; padding:14px 20px 20px; border-top:1px solid var(--line);
   }
   .btn-save{
-    flex:1; padding:13px 0; font-size:13px; font-weight:600; background:var(--ink); color:#fff;
+    flex:1; padding:13px 0; font-size:13px; font-weight:600; background:var(--blue); color:#fff;
     border:none; border-radius:10px; cursor:pointer; transition:transform 0.12s ease;
   }
   .btn-save:active{ transform:scale(0.97); }
   .btn-cancel{
-    flex:1; padding:13px 0; font-size:13px; font-weight:600; background:var(--bg); color:var(--ink);
+    flex:1; padding:13px 0; font-size:13px; font-weight:600; background:var(--ink-faint); color:var(--ink);
     border:none; border-radius:10px; cursor:pointer; transition:transform 0.12s ease;
   }
   .btn-cancel:active{ transform:scale(0.97); }
@@ -241,11 +286,14 @@
   <div id="pageCharts" class="content">
     <div class="card">
       <div class="sec-title">Gastos por categoría</div>
+      <div style="display:flex; gap:6px; margin-bottom:16px; flex-wrap:wrap;">
+        <button class="time-btn active" data-scale="diario">Diario</button>
+        <button class="time-btn" data-scale="mes">1 Mes</button>
+        <button class="time-btn" data-scale="3meses">3 Meses</button>
+        <button class="time-btn" data-scale="6meses">6 Meses</button>
+        <button class="time-btn" data-scale="anos">Año</button>
+      </div>
       <div id="donutSection"></div>
-    </div>
-    <div class="card">
-      <div class="sec-title">Ingresos vs gastos (6 meses)</div>
-      <div id="trendSection"></div>
     </div>
   </div>
 
@@ -301,7 +349,7 @@
         <path d="M17 5H9.5a1.5 1.5 0 0 0-1.5 1.5v12a1.5 1.5 0 0 0 1.5 1.5H17"/>
         <path d="M6 12H3m3 4H3m3-8H3"/>
       </svg>
-      <span>Gráficos</span>
+      <span>Gastos</span>
     </button>
     <button class="nav-btn" data-page="pageMovements">
       <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -426,16 +474,26 @@ function renderSummary(){
   const expense = monthTx.filter(t=>t.type==='gasto').reduce((s,t)=>s+t.amount,0);
   const net = income - expense;
   const pct = budget > 0 ? Math.min(expense / budget, 1) : 0;
-  const budgetFill = expense > budget ? '#C1502B' : (pct >= 0.8 ? '#C9A227' : '#1F7A5C');
+  const budgetFill = expense > budget ? 'var(--coral)' : (pct >= 0.8 ? 'var(--gold)' : 'var(--teal)');
+  
+  // Categoría con más gasto
+  const expenseByCategory = {};
+  monthTx.filter(t => t.type === 'gasto').forEach(t => {
+    expenseByCategory[t.category] = (expenseByCategory[t.category] || 0) + t.amount;
+  });
+  const topCategory = Object.entries(expenseByCategory).sort((a,b) => b[1]-a[1])[0];
+  const topCatLabel = topCategory ? catInfo('gasto', topCategory[0]).label : 'N/A';
+  const topCatAmount = topCategory ? topCategory[1] : 0;
 
   const card = document.getElementById('summaryCard');
   card.innerHTML = `
     <div class="bal-label">Balance de este mes</div>
-    <div class="bal-number" style="color: ${net >= 0 ? '#1F7A5C' : '#C1502B'}">${formatSignedEUR(net)}</div>
+    <div class="bal-number" style="color: ${net >= 0 ? 'var(--teal)' : 'var(--coral)'}">${formatSignedEUR(net)}</div>
     <div class="bal-sub">
       <div class="bal-stat income"><span class="bal-dot"></span><span>${formatEUR(income)}</span></div>
       <div class="bal-stat expense"><span class="bal-dot"></span><span>${formatEUR(expense)}</span></div>
     </div>
+    
     <div class="budget-section">
       <div class="budget-label">Presupuesto de gasto</div>
       <div class="budget-input-row">
@@ -444,7 +502,19 @@ function renderSummary(){
         <span class="pct">${Math.round((budget>0?expense/budget:0)*100)}%</span>
       </div>
       <div class="budget-bar"><div class="budget-fill" style="width: ${pct*100}%; background: ${budgetFill};"></div></div>
-    </div>`;
+      ${budget > 0 ? `<div style="font-size:12px; color:var(--ink-soft); margin-top:8px;">Disponible: ${formatEUR(Math.max(0, budget-expense))}</div>` : ''}
+    </div>
+    
+    ${topCategory ? `
+    <div class="budget-section">
+      <div class="budget-label">Gasto principal</div>
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <span style="font-size:13px;">${topCatLabel}</span>
+        <span style="font-weight:600; font-size:14px;">${formatEUR(topCatAmount)}</span>
+      </div>
+    </div>
+    ` : ''}
+  `;
   
   document.getElementById('budgetEditInput').addEventListener('blur', (e) => {
     const v = parseFloat(e.target.value.replace(',', '.'));
@@ -455,19 +525,46 @@ function renderSummary(){
   });
 }
 
+let currentChartScale = 'mes';
+
+function getTransactionsInScale(scale){
+  const now = new Date();
+  let startDate = new Date();
+  
+  switch(scale){
+    case 'diario':
+      startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      break;
+    case 'mes':
+      startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+      break;
+    case '3meses':
+      startDate = new Date(now.getFullYear(), now.getMonth() - 2, 1);
+      break;
+    case '6meses':
+      startDate = new Date(now.getFullYear(), now.getMonth() - 5, 1);
+      break;
+    case 'anos':
+      startDate = new Date(now.getFullYear(), 0, 1);
+      break;
+  }
+  
+  return transactions.filter(t => {
+    const tDate = new Date(t.date);
+    return tDate >= startDate && t.type === 'gasto';
+  });
+}
+
 function renderCharts(){
-  const mKey = currentMonthKey();
-  const monthTx = transactions.filter(t => monthKey(t.date) === mKey);
-  const expensesThisMonth = monthTx.filter(t => t.type === 'gasto');
+  const expenses = getTransactionsInScale(currentChartScale);
   const totals = {};
-  expensesThisMonth.forEach(t => { totals[t.category] = (totals[t.category] || 0) + t.amount; });
+  expenses.forEach(t => { totals[t.category] = (totals[t.category] || 0) + t.amount; });
   const entries = Object.entries(totals).sort((a,b) => b[1]-a[1]);
-  const total = entries.reduce((s,[,v]) => s+v, 0);
 
   const donutSection = document.getElementById('donutSection');
   donutSection.innerHTML = '';
   if(entries.length === 0){
-    donutSection.innerHTML = '<div class="chart-empty">Sin gastos este mes todavía.</div>';
+    donutSection.innerHTML = '<div class="chart-empty">Sin gastos en este período.</div>';
   } else {
     const list = document.createElement('div');
     list.className = 'category-list';
@@ -480,34 +577,6 @@ function renderCharts(){
     });
     donutSection.appendChild(list);
   }
-
-  const trendSection = document.getElementById('trendSection');
-  trendSection.innerHTML = '';
-  const now = new Date();
-  const months = [];
-  for(let i=5;i>=0;i--){
-    const d = new Date(now.getFullYear(), now.getMonth()-i, 1);
-    months.push({ key: d.toISOString().slice(0,7), label: d.toLocaleDateString('es-ES',{month:'short'}).replace('.','') });
-  }
-  const netByMonth = months.map(m => {
-    const tx = transactions.filter(t => monthKey(t.date) === m.key);
-    const income = tx.filter(t=>t.type==='ingreso').reduce((s,t)=>s+t.amount,0);
-    const expense = tx.filter(t=>t.type==='gasto').reduce((s,t)=>s+t.amount,0);
-    return income - expense;
-  });
-  const maxVal = Math.max(...netByMonth.map(Math.abs), 1);
-
-  const barsDiv = document.createElement('div');
-  barsDiv.className = 'trend-bars';
-  netByMonth.forEach((val, i) => {
-    const bar = document.createElement('div');
-    bar.className = 'trend-bar' + (val < 0 ? ' negative' : '');
-    const height = Math.abs(val) / maxVal * 100;
-    bar.style.height = height + '%';
-    bar.innerHTML = `<span class="trend-label">${months[i].label}</span>`;
-    barsDiv.appendChild(bar);
-  });
-  trendSection.appendChild(barsDiv);
 }
 
 function renderMovements(){
@@ -601,6 +670,15 @@ document.querySelectorAll('.seg-btn').forEach(btn => {
     document.querySelectorAll('.seg-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     populateCategorySelect();
+  });
+});
+
+document.querySelectorAll('.time-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    currentChartScale = btn.dataset.scale;
+    document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderCharts();
   });
 });
 
